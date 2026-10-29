@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a2d">
+  <meta name="description" content="Mô phỏng và tự khám phá hành trình quân mã trên bàn cờ 8×8, với AI gợi ý và quay lại nước đi.">
+  <title>Knight’s Tour · Phòng mô phỏng</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">♞</div>
+      <div class="brand-copy">
+        <span class="eyebrow">PHÒNG MÔ PHỎNG</span>
+        <h1>Knight’s Tour</h1>
+      </div>
+      <span class="header-note">Bàn cờ 8 × 8</span>
+    </header>
+
+    <main class="workspace">
+      <section class="board-panel" aria-labelledby="board-title">
+        <div class="panel-heading">
+          <div>
+            <h2 id="board-title">Hành trình quân mã</h2>
+            <p id="board-instruction">Chọn một ô bất kỳ để bắt đầu. Nhấp ô khác để đổi điểm xuất phát.</p>
+          </div>
+          <span class="algorithm-tag">WARNSDORFF + QUAY LUI</span>
+        </div>
+        <div class="board-stage">
+          <div class="ranks" aria-hidden="true"><span>8</span><span>7</span><span>6</span><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div>
+          <div class="board-stack">
+            <div class="board-frame">
+              <div id="board" class="board" role="group" aria-label="Bàn cờ 8 nhân 8; chọn ô xuất phát"></div>
+              <svg class="trail-layer" viewBox="0 0 800 800" preserveAspectRatio="none" aria-hidden="true"><polyline id="trail" points=""></polyline></svg>
+            </div>
+            <div class="files" aria-hidden="true"><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span></div>
+          </div>
+        </div>
+        <div class="board-legend"><span><i class="legend-swatch origin-swatch"></i>Điểm xuất phát</span><span><i class="legend-swatch visited-swatch"></i>Đã thăm</span><span><i class="legend-swatch reachable-swatch"></i>Có thể đi tiếp</span></div>
+      </section>
+
+      <aside class="sidebar" aria-label="Điều khiển và tiến trình">
+        <section class="control-panel">
+          <div class="panel-overline">CHẾ ĐỘ CHƠI</div>
+          <div class="mode-switch" role="group" aria-label="Chế độ chơi">
+            <button id="simulation-mode" class="mode-button active" type="button" aria-pressed="true">Mô phỏng</button>
+            <button id="explore-mode" class="mode-button" type="button" aria-pressed="false">Tự khám phá</button>
+          </div>
+          <div class="panel-overline status-label">TRẠNG THÁI</div>
+          <div class="status-top"><h2 id="status-text" aria-live="polite">Chọn ô xuất phát</h2><span id="status-pill" class="status-pill">Sẵn sàng</span></div>
+          <p id="status-detail" class="status-detail">Nhấp một ô trên bàn cờ để bắt đầu.</p>
+          <div class="progress-row"><span>Tiến trình</span><strong id="progress-text">0%</strong></div>
+          <div class="progress-track" role="presentation"><div id="progress-bar" class="progress-fill"></div></div>
+          <div class="stats">
+            <div><strong><span id="visit-count">0</span><small> / 64</small></strong><span>Ô đã thăm</span></div>
+            <div><strong id="current-square">—</strong><span>Ô hiện tại</span></div>
+            <div><strong id="backtrack-count">0</strong><span id="backtrack-label">Lần quay lui</span></div>
+          </div>
+          <div class="buttons">
+            <button id="step-button" class="button primary" type="button" disabled><span aria-hidden="true">▸</span> Từng bước</button>
+            <button id="play-button" class="button primary" type="button" disabled><span aria-hidden="true">▶</span> Tự động</button>
+            <button id="pause-button" class="button secondary" type="button" disabled><span aria-hidden="true">Ⅱ</span> Tạm dừng</button>
+            <button id="reset-button" class="button secondary" type="button" disabled><span aria-hidden="true">↺</span> Đặt lại</button>
+          </div>
+          <div id="explore-controls" class="explore-controls" hidden>
+            <button id="hint-button" class="button primary" type="button" disabled>✦ AI gợi ý</button>
+            <button id="undo-button" class="button secondary" type="button" disabled>↶ Quay lại</button>
+          </div>
+          <div id="speed-controls">
+            <div class="speed-heading"><label for="speed">Tốc độ tự động</label><output id="speed-label" for="speed">0,5 giây / bước</output></div>
+            <input id="speed" type="range" min="100" max="1500" step="100" value="500" aria-label="Thời gian mỗi bước tự động">
+            <div class="speed-ends" aria-hidden="true"><span>Nhanh</span><span>Chậm</span></div>
+          </div>
+        </section>
+
+        <section class="history-panel" aria-labelledby="history-title">
+          <div class="history-heading"><div><span class="panel-overline">NHẬT KÝ</span><h2 id="history-title">Thứ tự nước đi</h2></div><span class="history-hint">MỚI NHẤT Ở CUỐI</span></div>
+          <ol id="history" class="history-list"><li class="history-empty">Các nước đi sẽ hiện tại đây.</li></ol>
+        </section>
+      </aside>
+    </main>
+    <footer>Quân mã đi theo hình chữ L. Mỗi ô trong hành trình được ghé đúng một lần. Chế độ tự khám phá cho phép bạn thử và quay lại từng nước.</footer>
+  </div>
+</body>
+</html>

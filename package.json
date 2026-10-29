@@ -1,0 +1,8 @@
+{
+  "name": "knights-tour-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}
